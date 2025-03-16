@@ -33,6 +33,7 @@ class SlidingWindowRateLimiter:
 
         1.Перевіряє, чи існує історія повідомлень користувача.
         2.Видаляє застарілі повідомлення з історії користувача.
+        3. При видаленні всіх повідомлень з вікна користувача видаляє запис про нього з історії.
 
         Args:
             user_id (str): ID користувача.
@@ -41,6 +42,9 @@ class SlidingWindowRateLimiter:
         if user_id in self.history:
             while self.history[user_id] and self.history[user_id][0] < current_time - self.window_size:
                 self.history[user_id].popleft()
+        
+        if not self.history[user_id]:
+            del self.history[user_id]
 
     def can_send_message(self, user_id: str) -> bool:
         """
